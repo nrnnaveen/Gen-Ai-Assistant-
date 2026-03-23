@@ -1,41 +1,29 @@
 import streamlit as st
 import os
-import google.generativeai as genai
+from google import genai
 from utils.pdf_utils import extract_pdf_text
 
 # -------- PAGE CONFIG --------
 st.set_page_config(page_title="Nrn AI", layout="wide")
-
 st.title("👾 Nrn AI Study Assistant")
 
 # -------- GEMINI SETUP --------
 API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not API_KEY:
-    st.error("❌ GEMINI_API_KEY not found. Please add it in Streamlit secrets.")
+    st.error("❌ GEMINI_API_KEY not found. Add it in Streamlit secrets.")
     st.stop()
 
-genai.configure(api_key=API_KEY)
-
-# ✅ USE THIS MODEL (WORKING)
-model = genai.GenerativeModel("models/gemini-1.5-flash")
+client = genai.Client(api_key=API_KEY)
 
 # -------- AI FUNCTION --------
 def get_ai_response(prompt):
     try:
-        response = model.generate_content(
-            prompt,
-            generation_config={
-                "temperature": 0.7,
-                "max_output_tokens": 300
-            }
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
         )
-
-        if hasattr(response, "text") and response.text:
-            return response.text
-        else:
-            return "⚠️ No response generated. Try again."
-
+        return response.text
     except Exception as e:
         return f"❌ Error: {str(e)}"
 
@@ -70,7 +58,6 @@ if generate and user_input:
 if quiz and user_input:
     with st.spinner("Generating quiz..."):
         quiz_prompt = f"""
-        You are a helpful teacher.
         Create 5 quiz questions with answers from this topic:
         {user_input}
         """
