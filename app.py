@@ -1,53 +1,23 @@
 import streamlit as st
 import os
-import requests
+import google.generativeai as genai
 from utils.pdf_utils import extract_pdf_text
 
+# -------- PAGE CONFIG --------
 st.set_page_config(page_title="Nrn AI", layout="wide")
 
 st.title("👾 Nrn AI Study Assistant")
 
-# -------- HUGGING FACE SETUP --------
-API_URL = "https://router.huggingface.co/hf-inference/models/HuggingFaceH4/zephyr-7b-beta"
-HF_TOKEN = os.getenv("HF_TOKEN")
+# -------- GEMINI SETUP --------
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-headers = {
-    "Authorization": f"Bearer {HF_TOKEN}"
-}
+model = genai.GenerativeModel("gemini-1.5-flash")
 
+# -------- AI FUNCTION --------
 def get_ai_response(prompt):
     try:
-        payload = {
-            "inputs": prompt,
-            "parameters": {
-                "max_new_tokens": 200,
-                "temperature": 0.7
-            },
-            "options": {
-                "wait_for_model": True
-            }
-        }
-
-        response = requests.post(API_URL, headers=headers, json=payload)
-
-        # DEBUG (optional)
-        st.write(response.text)
-
-        if response.status_code != 200:
-            return f"API Error: {response.text}"
-
-        result = response.json()
-
-        if isinstance(result, list):
-            return result[0].get("generated_text", "No response")
-
-        elif isinstance(result, dict):
-            if "error" in result:
-                return f"Error: {result['error']}"
-            return str(result)
-
-        return "No valid response"
-
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
         return f"Error: {str(e)}"
 
@@ -88,4 +58,4 @@ if quiz and user_input:
 
 # -------- FOOTER --------
 st.markdown("---")
-st.caption("Developed By Naveen & Team🚀")
+st.caption("Developed By Naveen & Team 🚀")
