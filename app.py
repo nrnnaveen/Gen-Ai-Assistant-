@@ -3,68 +3,101 @@ import os
 from google import genai
 from utils.pdf_utils import extract_pdf_text
 
-# -------- PAGE CONFIG --------
+# -------- CONFIG --------
 st.set_page_config(page_title="Nrn AI", layout="wide")
-st.title("👾 Nrn AI Study Assistant")
+
+# -------- CUSTOM CSS (PREMIUM LOOK) --------
+st.markdown("""
+<style>
+.chat-bubble-user {
+    background-color: #2b313e;
+    padding: 10px 15px;
+    border-radius: 15px;
+    margin: 5px 0;
+    text-align: right;
+    color: white;
+}
+.chat-bubble-ai {
+    background-color: #1e1e1e;
+    padding: 10px 15px;
+    border-radius: 15px;
+    margin: 5px 0;
+    text-align: left;
+    color: white;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# -------- HEADER --------
+st.title("👾 Nrn AI Assistant")
+st.caption("Your Smart Study Partner 🚀")
 
 # -------- GEMINI SETUP --------
 API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not API_KEY:
-    st.error("❌ GEMINI_API_KEY not found. Add it in Streamlit secrets.")
+    st.error("❌ API Key missing")
     st.stop()
 
 client = genai.Client(api_key=API_KEY)
+
+# -------- SESSION STATE --------
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "👋 Hi! I'm Nrn AI. Ask me anything or upload notes!"}
+    ]
+
+# -------- DISPLAY CHAT --------
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        st.markdown(f"<div class='chat-bubble-user'>{msg['content']}</div>", unsafe_allow_html=True)
+    else:
+        st.markdown(f"<div class='chat-bubble-ai'>{msg['content']}</div>", unsafe_allow_html=True)
+
+# -------- INPUT AREA --------
+col1, col2 = st.columns([8,1])
+
+with col1:
+    user_input = st.text_input("Type your message...", label_visibility="collapsed")
+
+with col2:
+    send = st.button("➤")
+
+# -------- PDF UPLOAD --------
+uploaded_file = st.file_uploader("📄 Upload PDF", type="pdf")
+
+if uploaded_file:
+    pdf_text = extract_pdf_text(uploaded_file)
+    st.success("PDF uploaded!")
+
+    if st.button("Summarize PDF"):
+        user_input = f"Summarize this in simple way:\n{pdf_text[:2000]}"
 
 # -------- AI FUNCTION --------
 def get_ai_response(prompt):
     try:
         response = client.models.generate_content(
-            model="models/gemini-2.5-flash",  # ✅ FIXED
-            contents=prompt
+            model="models/gemini-2.5-flash",
+            contents=f"You are a helpful study assistant. Reply clearly:\n{prompt}"
         )
         return response.text
     except Exception as e:
-        return f"❌ Error: {str(e)}"
-        
-# -------- INPUT SECTION --------
-user_input = st.text_area("📚 Ask your question or paste notes:")
+        return f"❌ {str(e)}"
 
-uploaded_file = st.file_uploader("📄 Upload PDF", type="pdf")
+# -------- HANDLE MESSAGE --------
+if send and user_input:
+    # Add user message
+    st.session_state.messages.append({"role": "user", "content": user_input})
 
-if uploaded_file:
-    pdf_text = extract_pdf_text(uploaded_file)
-    st.success("PDF Loaded!")
-
-    if st.button("📄 Summarize PDF"):
-        user_input = f"Summarize this in simple points:\n{pdf_text[:2000]}"
-
-# -------- BUTTONS --------
-col1, col2 = st.columns(2)
-
-with col1:
-    generate = st.button("🤖 Generate Answer")
-
-with col2:
-    quiz = st.button("🧠 Generate Quiz")
-
-# -------- OUTPUT --------
-if generate and user_input:
+    # Get AI response
     with st.spinner("Thinking..."):
-        answer = get_ai_response(user_input)
-        st.subheader("📖 Answer")
-        st.write(answer)
+        reply = get_ai_response(user_input)
 
-if quiz and user_input:
-    with st.spinner("Generating quiz..."):
-        quiz_prompt = f"""
-        Create 5 quiz questions with answers from this topic:
-        {user_input}
-        """
-        quiz_output = get_ai_response(quiz_prompt)
-        st.subheader("🧠 Quiz")
-        st.write(quiz_output)
+    # Add AI message
+    st.session_state.messages.append({"role": "assistant", "content": reply})
+
+    st.rerun()
 
 # -------- FOOTER --------
 st.markdown("---")
-st.caption("Developed By Naveen & Team 🚀")
+st.caption("⚡ Powered by Gemini | Developed by Naveen & Team 🚀")
