@@ -89,3 +89,4 @@ if quiz and user_input:
 # -------- FOOTER --------
 st.markdown("---")
 st.caption("Developed By Naveen & Team🚀")
+st.write(response.text)
