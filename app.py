@@ -9,8 +9,17 @@ st.set_page_config(page_title="Nrn AI", layout="wide")
 st.title("👾 Nrn AI Study Assistant")
 
 # -------- GEMINI SETUP --------
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-pro")
+API_KEY = os.getenv("GEMINI_API_KEY")
+
+if not API_KEY:
+    st.error("❌ GEMINI_API_KEY not found. Please add it in Streamlit secrets.")
+    st.stop()
+
+genai.configure(api_key=API_KEY)
+
+# ✅ USE THIS MODEL (WORKING)
+model = genai.GenerativeModel("models/gemini-1.5-flash")
+
 # -------- AI FUNCTION --------
 def get_ai_response(prompt):
     try:
@@ -22,13 +31,13 @@ def get_ai_response(prompt):
             }
         )
 
-        if response.text:
+        if hasattr(response, "text") and response.text:
             return response.text
         else:
-            return "No response generated."
+            return "⚠️ No response generated. Try again."
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"❌ Error: {str(e)}"
 
 # -------- INPUT SECTION --------
 user_input = st.text_area("📚 Ask your question or paste notes:")
@@ -60,7 +69,11 @@ if generate and user_input:
 
 if quiz and user_input:
     with st.spinner("Generating quiz..."):
-        quiz_prompt = f"Create 5 quiz questions with answers:\n{user_input}"
+        quiz_prompt = f"""
+        You are a helpful teacher.
+        Create 5 quiz questions with answers from this topic:
+        {user_input}
+        """
         quiz_output = get_ai_response(quiz_prompt)
         st.subheader("🧠 Quiz")
         st.write(quiz_output)
