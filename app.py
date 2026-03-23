@@ -31,7 +31,7 @@ def get_ai_response(prompt):
         response = requests.post(API_URL, headers=headers, json=payload)
 
         # DEBUG (optional)
-        # st.write(response.text)
+        st.write(response.text)
 
         if response.status_code != 200:
             return f"API Error: {response.text}"
@@ -89,4 +89,3 @@ if quiz and user_input:
 # -------- FOOTER --------
 st.markdown("---")
 st.caption("Developed By Naveen & Team🚀")
-st.write(response.text)
