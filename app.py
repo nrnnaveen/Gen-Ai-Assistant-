@@ -20,13 +20,13 @@ client = genai.Client(api_key=API_KEY)
 def get_ai_response(prompt):
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.5-flash",
             contents=prompt
         )
         return response.text
     except Exception as e:
         return f"❌ Error: {str(e)}"
-
+        
 # -------- INPUT SECTION --------
 user_input = st.text_area("📚 Ask your question or paste notes:")
 
