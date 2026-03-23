@@ -8,7 +8,7 @@ st.set_page_config(page_title="Nrn AI", layout="wide")
 st.title("👾 Nrn AI Study Assistant")
 
 # -------- HUGGING FACE SETUP --------
-API_URL = "https://router.huggingface.co/hf-inference/models/google/flan-t5-large"
+API_URL = "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.2"
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 headers = {
@@ -20,20 +20,29 @@ def get_ai_response(prompt):
         payload = {
             "inputs": prompt,
             "parameters": {
-                "max_new_tokens": 200,
+                "max_new_tokens": 150,
                 "temperature": 0.7
             }
         }
 
         response = requests.post(API_URL, headers=headers, json=payload)
+
+        # 🔥 IMPORTANT: check raw response
+        if response.status_code != 200:
+            return f"API Error: {response.text}"
+
         result = response.json()
 
         if isinstance(result, list):
             return result[0].get("generated_text", "No response generated.")
-        elif "error" in result:
-            return f"Error: {result['error']}"
-        else:
+        
+        elif isinstance(result, dict):
+            if "error" in result:
+                return f"Error: {result['error']}"
             return str(result)
+
+        else:
+            return "Unexpected response format."
 
     except Exception as e:
         return f"Error: {str(e)}"
@@ -75,4 +84,4 @@ if quiz and user_input:
 
 # -------- FOOTER --------
 st.markdown("---")
-st.caption("Built for AI Expo 🚀")
+st.caption("Developed By Naveen & Team🚀")
