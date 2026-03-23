@@ -14,28 +14,33 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 headers = {
     "Authorization": f"Bearer {HF_TOKEN}"
 }
-
 def get_ai_response(prompt):
     try:
+        # ✅ PUT PAYLOAD HERE
         payload = {
             "inputs": prompt,
             "parameters": {
                 "max_new_tokens": 150,
                 "temperature": 0.7
+            },
+            "options": {
+                "wait_for_model": True
             }
         }
 
+        # ✅ API CALL
         response = requests.post(API_URL, headers=headers, json=payload)
 
-        # 🔥 IMPORTANT: check raw response
+        # ✅ CHECK RESPONSE
         if response.status_code != 200:
             return f"API Error: {response.text}"
 
         result = response.json()
 
+        # ✅ HANDLE OUTPUT
         if isinstance(result, list):
             return result[0].get("generated_text", "No response generated.")
-        
+
         elif isinstance(result, dict):
             if "error" in result:
                 return f"Error: {result['error']}"
