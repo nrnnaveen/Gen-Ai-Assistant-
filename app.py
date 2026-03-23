@@ -8,19 +8,19 @@ st.set_page_config(page_title="Nrn AI", layout="wide")
 st.title("👾 Nrn AI Study Assistant")
 
 # -------- HUGGING FACE SETUP --------
-API_URL = "https://router.huggingface.co/hf-inference/models/google/flan-t5-large"
+API_URL = "https://router.huggingface.co/hf-inference/models/HuggingFaceH4/zephyr-7b-beta"
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 headers = {
     "Authorization": f"Bearer {HF_TOKEN}"
 }
+
 def get_ai_response(prompt):
     try:
-        # ✅ PUT PAYLOAD HERE
         payload = {
             "inputs": prompt,
             "parameters": {
-                "max_new_tokens": 150,
+                "max_new_tokens": 200,
                 "temperature": 0.7
             },
             "options": {
@@ -28,26 +28,25 @@ def get_ai_response(prompt):
             }
         }
 
-        # ✅ API CALL
         response = requests.post(API_URL, headers=headers, json=payload)
 
-        # ✅ CHECK RESPONSE
+        # DEBUG (optional)
+        # st.write(response.text)
+
         if response.status_code != 200:
             return f"API Error: {response.text}"
 
         result = response.json()
 
-        # ✅ HANDLE OUTPUT
         if isinstance(result, list):
-            return result[0].get("generated_text", "No response generated.")
+            return result[0].get("generated_text", "No response")
 
         elif isinstance(result, dict):
             if "error" in result:
                 return f"Error: {result['error']}"
             return str(result)
 
-        else:
-            return "Unexpected response format."
+        return "No valid response"
 
     except Exception as e:
         return f"Error: {str(e)}"
