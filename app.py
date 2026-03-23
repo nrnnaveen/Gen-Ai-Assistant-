@@ -8,7 +8,7 @@ st.set_page_config(page_title="Nrn AI", layout="wide")
 st.title("👾 Nrn AI Study Assistant")
 
 # -------- HUGGING FACE SETUP --------
-API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-large"
+API_URL = "https://router.huggingface.co/hf-inference/models/google/flan-t5-large"
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 headers = {
@@ -17,14 +17,24 @@ headers = {
 
 def get_ai_response(prompt):
     try:
-        payload = {"inputs": prompt}
+        payload = {
+            "inputs": prompt,
+            "parameters": {
+                "max_new_tokens": 200,
+                "temperature": 0.7
+            }
+        }
+
         response = requests.post(API_URL, headers=headers, json=payload)
         result = response.json()
 
         if isinstance(result, list):
-            return result[0].get("generated_text", "No response")
+            return result[0].get("generated_text", "No response generated.")
+        elif "error" in result:
+            return f"Error: {result['error']}"
         else:
             return str(result)
+
     except Exception as e:
         return f"Error: {str(e)}"
 
