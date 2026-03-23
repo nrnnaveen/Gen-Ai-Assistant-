@@ -10,8 +10,7 @@ st.title("👾 Nrn AI Study Assistant")
 
 # -------- GEMINI SETUP --------
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-
-model = genai.GenerativeModel("gemini-1.0-pro")
+model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
 # -------- AI FUNCTION --------
 def get_ai_response(prompt):
@@ -23,7 +22,12 @@ def get_ai_response(prompt):
                 "max_output_tokens": 300
             }
         )
-        return response.text
+
+        if response.text:
+            return response.text
+        else:
+            return "No response generated."
+
     except Exception as e:
         return f"Error: {str(e)}"
 
