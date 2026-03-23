@@ -8,7 +8,7 @@ st.set_page_config(page_title="Nrn AI", layout="wide")
 st.title("👾 Nrn AI Study Assistant")
 
 # -------- HUGGING FACE SETUP --------
-API_URL = "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.2"
+API_URL = "https://router.huggingface.co/hf-inference/models/google/flan-t5-large"
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 headers = {
