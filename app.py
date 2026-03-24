@@ -5,7 +5,7 @@ from google import genai
 from utils.pdf_utils import extract_pdf_text
 
 # -------- CONFIG --------
-st.set_page_config(page_title="Scorpio AI", layout="wide")
+st.set_page_config(page_title="Gen AI", layout="wide")
 
 # -------- GEMINI --------
 API_KEY = os.getenv("GEMINI_API_KEY")
@@ -91,8 +91,8 @@ body {
 """, unsafe_allow_html=True)
 
 # -------- HEADER --------
-st.markdown("# 💬 Gen AI")
-st.caption("gen AI Assistant 🚀")
+st.markdown("# 👾 Gen AI")
+st.caption("Students AI Assistant 🚀")
 
 # -------- CHAT DISPLAY --------
 st.markdown('<div class="chat-container">', unsafe_allow_html=True)
@@ -160,4 +160,4 @@ if upload:
 
 # -------- FOOTER --------
 st.markdown("---")
-st.caption("⚡ Gen AI | Built by Naveen 🚀")
+st.caption("⚡ Gen AI | Built by Gen Z Coders 🚀")
