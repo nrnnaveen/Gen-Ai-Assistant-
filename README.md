@@ -1,4 +1,4 @@
-# 🦂 Nrn AI Assistant
+# ***🦂 Nrn AI Assistant***
 
 ## 🚀 Features
 - AI Chat Assistant
