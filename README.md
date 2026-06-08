@@ -27,7 +27,7 @@ Use Streamlit Cloud:
 - Push repo to GitHub
 - Go to Streamlit Cloud
 - Connect repo
-- Deploy
+- Deploy app
 
 ## 🎯 Demo
 - Ask questions
