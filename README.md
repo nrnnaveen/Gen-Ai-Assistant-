@@ -33,3 +33,4 @@ Use Streamlit Cloud:
 - Ask questions
 - Upload PDF
 - Speak using mic
+- Text Support Available 
