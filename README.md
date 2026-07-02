@@ -5,7 +5,7 @@
 - Voice Input
 - PDF Upload & Summarization
 - Quiz Generator
-- All Rounder Ai
+- All Rounder Ai (Text / Voice / Upload )
 
 ## ⚙️ Setup
 
