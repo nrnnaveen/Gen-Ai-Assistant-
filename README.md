@@ -33,5 +33,5 @@ Use Streamlit Cloud:
 ## 🎯 Demo
 - Ask questions
 - Upload PDF
-- Speak using mic
-- Text Support Available 
+- Speak using mic 🎤 
+- Text Support
